@@ -41,10 +41,12 @@
        (package-user-dir (expand-file-name (make-temp-name "lsp-tmp-elpa")
                                            user-emacs-directory))
        (custom-file (expand-file-name "custom.el" package-user-dir))
-       (pkg-list '(lsp-mode lsp-ui yasnippet lsp-java lsp-python-ms lsp-haskell helm-lsp lsp-treemacs dap-mode lsp-origami company flycheck)))
+       (pkg-list '(lsp-mode vue-mode which-key)))
 
   (package-initialize)
   (package-refresh-contents)
+
+  (setq lsp-keymap-prefix "C-c l")
 
   (mapcar (lambda (pkg)
             (unless (package-installed-p pkg)
@@ -54,7 +56,15 @@
 
   (add-hook 'prog-mode-hook 'lsp)
   (add-hook 'kill-emacs-hook `(lambda ()
-                                (delete-directory ,package-user-dir t))))
+                                (delete-directory ,package-user-dir t)))
+
+  ;; not necessary but vue-mode is ugly without this
+  (setq mmm-submode-decoration-level 0)
+
+  (which-key-mode)
+  (add-to-list 'auto-mode-alist '("\\.vue\\'" . vue-mode))
+  (add-hook 'vue-mode-hook 'lsp)
+  (add-hook 'lsp-mode-hook 'lsp-enable-which-key-integration))
 
 (provide 'lsp-start-plain)
 ;;; lsp-start-plain.el ends here
